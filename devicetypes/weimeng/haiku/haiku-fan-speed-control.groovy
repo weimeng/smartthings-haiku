@@ -62,32 +62,24 @@ def parse(String description) {
 
 // handle commands
 
-def off() {
-    sendEvent(name: "switch", value: "off")
-    sendRequest("<" + deviceMac + ";FAN;PWR;OFF>")
-}
-
 def on() {
     sendEvent(name: "switch", value: "on")
-    sendRequest("<" + deviceMac + ";FAN;PWR;ON>")
+    parent.fanOn()
+}
+
+def off() {
+    sendEvent(name: "switch", value: "off")
+    parent.fanOff()
 }
 
 def setLevel(level) {
     sendEvent(name: "level", value: level)
     Integer speed = convertPercentToSpeed(level)
     sendEvent(name: "fanSpeed", value: speed)
-    sendRequest("<" + deviceMac + ";FAN;SPD;SET;" + speed + ">")
+    parent.fanSpeed(speed)
 }
 
 // helper methods
-
-def sendRequest(message) {
-    def hosthex = convertIPToHex(deviceIP)
-    def porthex = convertPortToHex(31415)
-    device.deviceNetworkId = "$hosthex:$porthex"
-    def hubAction = new physicalgraph.device.HubAction(message, physicalgraph.device.Protocol.LAN)
-    return hubAction
-}
 
 private Integer convertPercentToSpeed(percent) {
     Integer speed = Math.ceil(percent / 100.0 * 7)
@@ -99,14 +91,4 @@ private Integer convertPercentToSpeed(percent) {
     speed = (speed < 1) ? 1 : speed
 
     return speed
-}
-
-private String convertIPToHex(ipAddress) {
-    String hex = ipAddress.tokenize( '.' ).collect {  String.format( '%02X', it.toInteger() ) }.join()
-    return hex
-}
-
-private String convertPortToHex(port) {
-	String hexport = port.toString().format( '%04X', port.toInteger() )
-    return hexport
 }

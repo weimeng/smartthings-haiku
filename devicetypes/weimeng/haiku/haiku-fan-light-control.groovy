@@ -5,11 +5,6 @@
  *
  */
 
-preferences {
-	input("deviceMac", "text", title: "Device MAC address", description: "The device's MAC address", required: true)
-	input("deviceIP", "text", title: "Device IP address", description: "The device's IP address", required: true)
-}
-
 metadata {
 	definition (name: "Haiku Fan Light Control", namespace: "weimeng/smartthings-haiku", author: "weimeng") {
         capability "Switch"
@@ -62,32 +57,24 @@ def parse(String description) {
 
 // handle commands
 
-def off() {
-    sendEvent(name: "switch", value: "off")
-    sendRequest("<" + deviceMac + ";LIGHT;PWR;OFF>")
-}
-
 def on() {
     sendEvent(name: "switch", value: "on")
-    sendRequest("<" + deviceMac + ";LIGHT;PWR;ON>")
+    parent.lightOn()
+}
+
+def off() {
+    sendEvent(name: "switch", value: "off")
+    parent.lightOff()
 }
 
 def setLevel(level) {
     sendEvent(name: "level", value: level)
     Integer lightLevel = convertPercentToLightLevel(level)
     sendEvent(name: "lightLevel", value: lightLevel)
-    sendRequest("<" + deviceMac + ";LIGHT;LEVEL;SET;" + lightLevel + ">")
+    parent.lightLevel(lightLevel)
 }
 
 // helper methods
-
-def sendRequest(message) {
-    def hosthex = convertIPToHex(deviceIP)
-    def porthex = convertPortToHex(31415)
-    device.deviceNetworkId = "${hosthex}:${porthex}-light"
-    def hubAction = new physicalgraph.device.HubAction(message, physicalgraph.device.Protocol.LAN, "${hosthex}:${porthex}")
-    sendHubCommand(hubAction)
-}
 
 private Integer convertPercentToLightLevel(percent) {
     Integer level = Math.ceil(percent / 100.0 * 16)
@@ -99,14 +86,4 @@ private Integer convertPercentToLightLevel(percent) {
     level = (level < 1) ? 1 : level
 
     return level
-}
-
-private String convertIPToHex(ipAddress) {
-    String hex = ipAddress.tokenize( '.' ).collect {  String.format( '%02X', it.toInteger() ) }.join()
-    return hex
-}
-
-private String convertPortToHex(port) {
-	String hexport = port.toString().format( '%04X', port.toInteger() )
-    return hexport
 }
