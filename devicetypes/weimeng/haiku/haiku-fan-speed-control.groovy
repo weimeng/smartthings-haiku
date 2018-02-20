@@ -64,7 +64,6 @@ def parse(String description) {
 
 def off() {
     sendEvent(name: "switch", value: "off")
-    sendEvent(name: "fanSpeed", value: 0)
     sendRequest("<" + deviceMac + ";FAN;PWR;OFF>")
 }
 
@@ -86,7 +85,6 @@ def sendRequest(message) {
     def hosthex = convertIPToHex(deviceIP)
     def porthex = convertPortToHex(31415)
     device.deviceNetworkId = "$hosthex:$porthex"
-    def cmds = []
     def hubAction = new physicalgraph.device.HubAction(message, physicalgraph.device.Protocol.LAN)
     return hubAction
 }
