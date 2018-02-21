@@ -1,5 +1,23 @@
+/**
+ * Haiku Fan
+ *
+ * Copyright 2018 Wei-Meng Lee (https://github.com/weimeng)
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License. You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
+ *  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing permissions and limitations under the License.
+ *
+ *  Inspired by code from "system48": https://github.com/System48/Smartthings
+ *
+ */
+
 metadata {
-    definition(name: "Haiku Fan", namespace: "weimeng/smartthings-haiku", author: "weimeng") {
+    definition(name: "Haiku Fan", namespace: "weimeng", author: "Wei-Meng Lee") {
         capability "Switch"
         capability "Switch Level"
 
@@ -151,8 +169,7 @@ private Integer convertPercentToSpeed(percent) {
 }
 
 private void createChildDevices() {
-    log.debug 'Creating child devices'
-    addChildDevice("Haiku Fan Light Control", "${getDeviceNetworkId()}-light", null, [completedSetup: true, label: "${device.displayName} Light", isComponent: true, componentName: "light", componentLabel: "Light"])
+    addChildDevice("Haiku Fan Light", "${getDeviceNetworkId()}-light", null, [completedSetup: true, label: "${device.displayName} Light", isComponent: true, componentName: "light", componentLabel: "Light"])
 }
 
 private String getDeviceNetworkId() {
