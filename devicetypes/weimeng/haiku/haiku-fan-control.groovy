@@ -4,15 +4,10 @@ metadata {
         capability "Switch Level"
 
         attribute "fanSpeed", "number"
-        attribute "fanSwitch", "enum", ["on", "off"]
-
         attribute "lightLevel", "number"
         attribute "lightSwitch", "enum", ["on", "off"]
 
-        command "fanOn"
-        command "fanOff"
         command "fanSpeed"
-
         command "lightOn"
         command "lightOff"
         command "lightLevel"
@@ -25,7 +20,7 @@ metadata {
         }
 
         multiAttributeTile(name: "vanity", type: "generic", width: 6, height: 4, canChangeIcon: true) {
-            tileAttribute("device.fanSwitch", key: "PRIMARY_CONTROL") {
+            tileAttribute("device.switch", key: "PRIMARY_CONTROL") {
                 attributeState "on", label: "", icon: "st.Lighting.light24", backgroundColor: "#00a0dc"
                 attributeState "off", label: "", icon: "st.Lighting.light24", backgroundColor: "#00a0dc"
             }
@@ -36,14 +31,14 @@ metadata {
             }
         }
 
-        standardTile("fanPowerOn", "device.fanSwitch", height: 2, width: 2, decoration: "flat") {
-            state "on", label: "On", action: "fanOn", icon: "st.Lighting.light24", backgroundColor: "#00a0dc"
-            state "off", label: "On", action: "fanOn", icon: "st.Lighting.light24", backgroundColor: "#ffffff"
+        standardTile("fanPowerOn", "device.switch", height: 2, width: 2, decoration: "flat") {
+            state "on", label: "On", action: "on", icon: "st.Lighting.light24", backgroundColor: "#00a0dc"
+            state "off", label: "On", action: "on", icon: "st.Lighting.light24", backgroundColor: "#ffffff"
         }
 
-        standardTile("fanPowerOff", "device.fanSwitch", height: 2, width: 2, decoration: "flat") {
-            state "on", label: "Off", action: "fanOff", icon: "st.samsung.da.RC_ic_power", backgroundColor: "#ffffff"
-            state "off", label: "Off", action: "fanOff", icon: "st.samsung.da.RC_ic_power", backgroundColor: "#00a0dc"
+        standardTile("fanPowerOff", "device.switch", height: 2, width: 2, decoration: "flat") {
+            state "on", label: "Off", action: "off", icon: "st.samsung.da.RC_ic_power", backgroundColor: "#ffffff"
+            state "off", label: "Off", action: "off", icon: "st.samsung.da.RC_ic_power", backgroundColor: "#00a0dc"
         }
 
 		controlTile("fanSpeed", "device.fanSpeed", "slider", height: 2, width: 2, range: (1..7)) {
@@ -90,13 +85,11 @@ def updated() {
 // Fan
 
 def fanOn() {
-    log.debug "Turning fan on"
     sendCommand("<" + deviceMac + ";FAN;PWR;ON>")
     sendEvent(name: "fanSwitch", value: "on")
 }
 
 def fanOff() {
-    log.debug "Turning fan off"
     sendCommand("<" + deviceMac + ";FAN;PWR;OFF>")
     sendEvent(name: "fanSwitch", value: "off")
 }
@@ -109,13 +102,11 @@ def fanSpeed(Integer speed) {
 // Light
 
 def lightOn() {
-    log.debug "Turning light on"
     sendCommand("<" + deviceMac + ";LIGHT;PWR;ON>")
     sendEvent(name: "lightSwitch", value: "on")
 }
 
 def lightOff() {
-    log.debug "Turning light off"
     sendCommand("<" + deviceMac + ";LIGHT;PWR;OFF>")
     sendEvent(name: "lightSwitch", value: "off")
 }
@@ -125,18 +116,43 @@ def lightLevel(Integer level) {
     sendEvent(name: "lightLevel", value: level)
 }
 
+// Map switch & switch level methods to fan methods
+
+def on() {
+    fanOn()
+}
+
+def off() {
+    fanOff()
+}
+
+// Primarily used for Google Assistant voice control. The tile uses fanSpeed().
+def setLevel(Integer level) {
+    Integer speed = convertPercentToSpeed(level)
+    fanSpeed(speed)
+
+    // Set the "level" attribute as SmartThings uses this value to set fan speed
+    // when using turn up or turn down voice commands
+    sendEvent(name: "level", value: level)
+}
+
 // Helper methods
 
-private sendCommand(String message) {
-    device.deviceNetworkId = getDeviceNetworkId()
-    def hubAction = new physicalgraph.device.HubAction(message, physicalgraph.device.Protocol.LAN)
-    sendHubCommand(hubAction)
+private Integer convertPercentToSpeed(percent) {
+    Integer speed = Math.ceil(percent / 100.0 * 7)
+
+    // Make sure fan speed isn't higher than 7
+    speed = (speed > 7) ? 7 : speed
+
+    // Don't let fan speed be set to 0
+    speed = (speed < 1) ? 1 : speed
+
+    return speed
 }
 
 private void createChildDevices() {
     log.debug 'Creating child devices'
-    addChildDevice("Haiku Fan Speed Control", "${getDeviceNetworkId()}-fan", null, [completedSetup: true, label: "${device.displayName} Speed", isComponent: false, componentName: "fan", componentLabel: "Fan"])
-    addChildDevice("Haiku Fan Light Control", "${getDeviceNetworkId()}-light", null, [completedSetup: true, label: "${device.displayName} Light", isComponent: false, componentName: "light", componentLabel: "Light"])
+    addChildDevice("Haiku Fan Light Control", "${getDeviceNetworkId()}-light", null, [completedSetup: true, label: "${device.displayName} Light", isComponent: true, componentName: "light", componentLabel: "Light"])
 }
 
 private String getDeviceNetworkId() {
@@ -144,4 +160,10 @@ private String getDeviceNetworkId() {
     def port = 31415
     def portHex = port.toString().format('%04X', port.toInteger())
     return "${ipHex}:${portHex}"
+}
+
+private sendCommand(String message) {
+    device.deviceNetworkId = getDeviceNetworkId()
+    def hubAction = new physicalgraph.device.HubAction(message, physicalgraph.device.Protocol.LAN)
+    sendHubCommand(hubAction)
 }
