@@ -36,20 +36,21 @@ function lifecycle_handler.init(driver, device)
 
     if level == 0 then
       device:emit_event(capabilities.switch.switch.off())
-      return
-    end
-
-    device:emit_event(capabilities.switch.switch.on())
-
-    local converted_level
-    if helpers.is_fan(device) then
-      converted_level = helpers.convert_fan_speed_to_percent(level)
     else
-      converted_level = helpers.convert_light_level_to_percent(level)
-    end
+      device:emit_event(capabilities.switch.switch.on())
 
-    device:emit_event(capabilities.switchLevel.level(converted_level))
+      local converted_level
+      if helpers.is_fan(device) then
+        converted_level = helpers.convert_fan_speed_to_percent(level)
+      else
+        converted_level = helpers.convert_light_level_to_percent(level)
+      end
+
+      device:emit_event(capabilities.switchLevel.level(converted_level))
+    end
   end
+
+  udp:close()
 end
 
 -- function lifecycle_handler.added(driver, device)
