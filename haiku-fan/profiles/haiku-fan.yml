@@ -2,6 +2,8 @@ name: haiku-fan
 components:
 - id: main
   capabilities:
+    - id: refresh
+      version: 1
     - id: switch
       version: 1
     - id: switchLevel

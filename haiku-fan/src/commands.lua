@@ -6,6 +6,10 @@ local helpers = require("helpers")
 
 local command_handler = {}
 
+function command_handler.refresh(_driver, device, _command)
+  helpers.refresh_device_state(device)
+end
+
 function command_handler.switch_on(_driver, device, _command)
   local message
   if helpers.is_fan(device) then

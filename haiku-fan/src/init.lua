@@ -11,10 +11,14 @@ local driver = Driver("Haiku Fan", {
   discovery = discovery.start,
   lifecycle_handlers = lifecycles,
   supported_capabilities = {
+    capabilities.refresh,
     capabilities.switch,
     capabilities.switchLevel
   },
   capability_handlers = {
+    [capabilities.refresh.ID] = {
+      [capabilities.refresh.commands.refresh.NAME] = commands.refresh
+    },
     [capabilities.switch.ID] = {
       [capabilities.switch.commands.on.NAME] = commands.switch_on,
       [capabilities.switch.commands.off.NAME] = commands.switch_off
