@@ -1,0 +1,26 @@
+name: 'Haiku Fan'
+packageKey: 'com.weimenglee.haiku-fan'
+permissions:
+  lan: {}
+  discovery: {}
+preferences:
+  - title: "IP address"
+    name: ip_address
+    description: "IP address of your Haiku Fan"
+    required: true
+    preferenceType: string
+    definition:
+      minLength: 7
+      maxLength: 15
+      stringType: text
+      default: ""
+  - title: "MAC address"
+    name: mac_address
+    description: "MAC address of your Haiku Fan"
+    required: true
+    preferenceType: string
+    definition:
+      minLength: 17
+      maxLength: 17
+      stringType: text
+      default: ""

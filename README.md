@@ -1,33 +1,12 @@
-# Haiku fan device handler for SmartThings
+## Haiku fan SmartThings integration
 
-This device handler was written with the intent of enabling voice control using
+This integration was written with the intent of enabling voice control using
 the Google Assistant SmartThings integration.
 
-## Installation
-
-Install manually or using Github integration with these settings:
-
-```
-Owner: weimeng
-Name: smartthings-haiku
-Branch: master
-```
-
-## Setup
-
-1. Using the web interface, add a new device. Make sure to select the `Haiku
-   Fan` device handler!
-2. In the device page, click on edit link next to "Preferences".
-3. Enter your fan's MAC address and IP address.
-4. In the SmartThings app, click on Add Things.
-5. Your fan should now be paired.
+Credits to Bruce Pennypacker (@bpennypacker) for their work done reverse
+engineering the Haiku fan protocol: https://bruce.pennypacker.org/category/haiku/
 
 ## Usage
-
-This device handler creates a hidden child device named `${fan name} light`. If
-you name your fan "Study Room Fan", a "Study Room Fan Light" hidden device will
-be created. It will not appear in your Things list, but can be added as a
-switch to Smart Apps, such as the Google Assistant integration.
 
 In the voice control examples below, substitute "fan" with your actual fan name.
 
@@ -56,3 +35,33 @@ In the voice control examples below, substitute "fan" with your actual fan name.
 This device handler is unable to detect the current state of your fan's motor
 and lights. If you adjust your fan with the remote control or Haiku's app, it
 will go out of sync with SmartThings.
+
+## SmartThings Edge driver
+
+Details coming soon.
+
+## SmartThings device handler
+
+This device handler creates a hidden child device named `${fan name} light`. If
+you name your fan "Study Room Fan", a "Study Room Fan Light" hidden device will
+be created. It will not appear in your Things list, but can be added as a
+switch to Smart Apps, such as the Google Assistant integration.
+
+### Installation
+
+Install manually or using Github integration with these settings:
+
+```
+Owner: weimeng
+Name: smartthings-haiku
+Branch: master
+```
+
+### Setup
+
+1. Using the web interface, add a new device. Make sure to select the `Haiku
+   Fan` device handler!
+2. In the device page, click on edit link next to "Preferences".
+3. Enter your fan's MAC address and IP address.
+4. In the SmartThings app, click on Add Things.
+5. Your fan should now be paired.
