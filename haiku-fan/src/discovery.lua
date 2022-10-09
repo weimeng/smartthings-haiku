@@ -13,7 +13,7 @@ function discovery.start(driver, opts, cons)
   local broadcast_address = host:match("%d+%.%d+%.%d+%.") .. "255"
 
   -- Broadcast discovery message
-  log.info("Sending discovery message")
+  log.info("-- Discovery: Sending discovery message")
   s:setoption("broadcast", true)
   s:settimeout(5)
   s:sendto("<ALL;DEVICE;ID;GET>", broadcast_address, 31415)
@@ -23,9 +23,10 @@ function discovery.start(driver, opts, cons)
   local devices = {}
   repeat
     local data, ip, port = s:receivefrom()
-    log.info("Received: " .. data)
 
     if data then
+      log.info("-- Discovery: Received from " .. ip .. " - " .. data)
+
       devices[ip] = {
         data = data,
       }
