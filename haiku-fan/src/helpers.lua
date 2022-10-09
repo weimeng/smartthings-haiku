@@ -1,11 +1,11 @@
 local helpers = {}
 
 function helpers.convert_fan_speed_to_percent(speed)
-  return speed / 7.0 * 100
+  return math.floor(speed / 7.0 * 100)
 end
 
 function helpers.convert_light_level_to_percent(level)
-  return level / 16.0 * 100
+  return math.floor(level / 16.0 * 100)
 end
 
 function helpers.convert_percent_to_fan_speed(percent)

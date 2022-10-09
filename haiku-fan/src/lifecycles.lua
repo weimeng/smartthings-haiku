@@ -36,6 +36,7 @@ function lifecycle_handler.init(driver, device)
 
     if level == 0 then
       device:emit_event(capabilities.switch.switch.off())
+      device:emit_event(capabilities.switchLevel.level(0))
     else
       device:emit_event(capabilities.switch.switch.on())
 
