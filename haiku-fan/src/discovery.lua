@@ -2,6 +2,9 @@ local socket = require("socket")
 local log = require('log')
 local datastore = require("datastore")
 
+-- Local imports
+local helpers = require("helpers")
+
 local discovery = {}
 
 function discovery.start(driver, opts, cons)
@@ -37,12 +40,7 @@ function discovery.start(driver, opts, cons)
 
   -- Parse data
   for ip, values in next, devices do
-    local tmp_data = string.sub(values['data'], 2, -2) .. ';'
-
-    fields = {}
-    for field in tmp_data:gmatch("(.-);") do
-      table.insert(fields, field)
-    end
+    local fields = helpers.split_response(values['data'])
 
     devices[ip]['label'] = fields[1]
     devices[ip]['mac_address'] = fields[4]
